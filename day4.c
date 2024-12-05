@@ -20,12 +20,12 @@ int main(void) {
 
     printf("Allocating memory for storing rows... ");
     for (i = 0; i < MAXROWS; i++)
-        rows[i] = (char *)malloc(MAXROWLEN);
+        rows[i] = (char *)malloc(MAXROWLEN + 2);
     printf("Success!\n");
 
     printf("Scaning lines of input into memory... ");
     i = 0;
-    while (getline(rows + i++, &max_row_len, stdin) > 0)
+    while (i < MAXROWS && getline(rows + i++, &max_row_len, stdin) > 0)
         ;
     printf("Successfully scanned %d lines ", i);
 
@@ -87,7 +87,7 @@ int main(void) {
     printf("success!\n");
 
     printf("The amount of XMAS found is\n"
-           "***************************** %d *****************************", xmas_counter);
+           "***************************** %d *****************************\n", xmas_counter);
     printf("The amount of X-MAS found is\n"
-           "***************************** %d *****************************", x_mas_counter);
+           "***************************** %d *****************************\n", x_mas_counter);
 }
