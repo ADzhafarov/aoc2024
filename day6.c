@@ -93,13 +93,10 @@ int main(void) {
     prev_coord.j = -1;
     while (1) {
         visited = add_coordinate(visited, current_coord, &new);
-        /*printf("\tGuard at (%d, %d) [%s]\n", current_coord.i, current_coord.j, new ? "new" : "old");*/
         count_unique += new;
 
-        printf("\t\tCheking for loop possibility... ");
         loop_possible = check_for_loop_option(current_coord, visited, direction, rows, real_height, real_width, start);
         loop_options += loop_possible;
-        printf("%s", loop_possible ? "Possible\n" : "Impossible\n");
 
         current_coord = step(current_coord, &direction, real_height, real_width, rows, &full_turn);
 
@@ -151,11 +148,6 @@ int check_for_loop_option(Coordinates current, TNode *visited, Coordinates direc
     Coordinates fast, slow;
     Coordinates fast_dir, slow_dir;
     int full_turn, i;
-    int verbose = 0;
-
-    /*if (new_obstacle.i == 11 && new_obstacle.j == 12) {*/
-    /*    verbose = 1;*/
-    /*}*/
 
     fast_dir = slow_dir = direction;
     fast = slow = current;
@@ -185,12 +177,8 @@ int check_for_loop_option(Coordinates current, TNode *visited, Coordinates direc
                 return 0;
             }
         }
-        if (verbose)
-            printf("\t\t fast: (%d, %d), slow: (%d, %d)\n", fast.i, fast.j, slow.i, slow.j);
         if (compare_coords(&slow, &fast) == 0 && compare_coords(&slow_dir, &fast_dir) == 0) {
             rows[new_obstacle.i][new_obstacle.j] = '.';
-            printf(" (%d, %d) ", new_obstacle.i, new_obstacle.j);
-
             return 1;
         }
     }
