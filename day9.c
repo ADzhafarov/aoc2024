@@ -18,10 +18,25 @@ int main(void) {
     finish = input + len - 1;
     int start_id = 0;
     int finish_id = (len - 1) / 2;
-    unsigned long position = 0;
+    unsigned long position;
 
     int start_num;
     int finish_num;
+    int *empty_slots_pos = (int *)malloc((len - 1) / 2 * sizeof(int));
+    int i;
+
+    position = 0;
+    for (i = 0; i < len - 1; i++) {
+        if (i % 2)
+            empty_slots_pos[i / 2] = position;
+        position += input[i] - '0';
+    }
+
+    printf("positions: ");
+    for (i = 0; i < (len-1) / 2; i++) {
+        printf("%d ", empty_slots_pos[i]);
+    }
+    printf("\n");
 
     printf("len = %d, start state = %d, finish_state = %d, finish_id = %d\n", len, start_state, finish_state, finish_id);
 
