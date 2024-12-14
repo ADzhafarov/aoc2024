@@ -3,6 +3,9 @@
 #include <string.h>
 
 #define MAXLINE     100
+#define STARTSKIP   4
+#define SKIP        101
+#define MAXROBOTS   500
 #define GRIDWIDTH   101
 #define GRIDHEIGHT  103
 #define DEFAULTSEC  100
@@ -16,16 +19,20 @@ typedef struct _bot {
 
 Robot get_robot(char *line);
 void print_robot(Robot robot);
-Robot calc_pos(Robot robot);
+Robot calc_step(Robot robot, int skip);
+void print_grid(Robot *robots, int robots_num);
 
 int seconds;
 
 int main(int argc, char *argv[]) {
-    char *line;
+    setbuf(stdout, NULL);
+    int i, j;
+    char *line, c;
     size_t maxline = MAXLINE;
     int safety_factor;
     Robot robot;
-    int robots;
+    Robot *robots;
+    int robots_num;
 
     if (argc == 1)
         seconds = DEFAULTSEC;
@@ -38,30 +45,64 @@ int main(int argc, char *argv[]) {
         {0, 0},
     };
 
-    robots = 0;
-    while (getline(&line, &maxline, stdin) > 0) {
-        robot = get_robot(line);
-        robot = calc_pos(robot);
-        if (robot.px == GRIDWIDTH / 2 || robot.py == GRIDHEIGHT / 2)
-            continue;
-        quadrants[robot.px > GRIDWIDTH / 2][robot.py > GRIDHEIGHT / 2]++;
-        robots++;
+    FILE *f = fopen("input.txt", "r");
+    if (f == NULL) {
+        printf("Can't open input.txt\n");
+        exit(1);
+    } else {
+        printf("input.txt opened successfully\n");
     }
 
-    printf("Total amount of robots: %d\n", robots);
-    
-    printf("Quadrants:\n");
-    printf("\t---------\n");
-    printf("\t|%3d|%3d|\n", quadrants[0][0], quadrants[1][0]);
-    printf("\t---------\n");
-    printf("\t|%3d|%3d|\n", quadrants[0][1], quadrants[1][1]);
-    printf("\t---------\n");
+    printf("Reading input... \n");
+    robots = (Robot *)malloc(MAXROBOTS * sizeof(Robot));
+    robots_num = 0;
+    while (getline(&line, &maxline, f) > 0) {
+        robots[robots_num++] = get_robot(line);
+        print_robot(robots[robots_num-1]);
+    }
+    printf("\tSuccess\n");
 
-    safety_factor = quadrants[0][0] * quadrants[0][1] * quadrants[1][0] * quadrants[1][1];
-    printf("The safety factor is\n"
-           "******* %d *******\n", safety_factor);
+
+    for (j = 0; j < robots_num; j++) {
+        robots[j] = calc_step(robots[j], STARTSKIP);
+    }
+
+    i = STARTSKIP;
+    while ((c = getchar()) == '\n') {
+        printf("After %d seconds:\n", i);
+        print_grid(robots, robots_num);
+        for (j = 0; j < robots_num; j++) {
+            robots[j] = calc_step(robots[j], SKIP);
+        }
+        i += SKIP;
+
+        printf("Press Enter to skip 101 seconds or Ctrl+D to finish\n");
+
+    }
         
+    free(robots);
     return 0;
+}
+
+void print_grid(Robot *robots, int robots_num) {
+    int i, j, k;
+    int found;
+
+    for (i = 0; i < GRIDHEIGHT; i++) {
+        for (j = 0; j < GRIDWIDTH; j++) {
+            found = 0;
+            for (k = 0; k < robots_num; k++)
+                if (robots[k].px == j && robots[k].py == i) {
+                    found = 1;
+                    break;
+                }
+            if (found)
+                printf("#");
+            else
+                printf(" ");
+        }
+        printf("\n");
+    }
 }
 
 Robot get_robot(char *line) {
@@ -77,13 +118,13 @@ Robot get_robot(char *line) {
     return robot;
 }
 
-Robot calc_pos(Robot robot) {
-    robot.px = (robot.px + robot.vx * seconds) % GRIDWIDTH;
+Robot calc_step(Robot robot, int skip) {
+    robot.px = (robot.px + robot.vx * skip) % GRIDWIDTH;
     if (robot.px < 0) {
         robot.px += GRIDWIDTH;
     }
 
-    robot.py = (robot.py + robot.vy * seconds) % GRIDHEIGHT;
+    robot.py = (robot.py + robot.vy * skip) % GRIDHEIGHT;
     if (robot.py < 0)
         robot.py += GRIDHEIGHT;
 
