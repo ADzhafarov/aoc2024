@@ -88,8 +88,9 @@ int main(int argc, char *argv[]) {
     printf("\tSuccess\n");
 
     printf("Freeing memory...\n");
-    for (int i = 0; i < height; i++)
+    for (int i = 0; i <= height; i++)
         free(rows[i]);
+    fclose(f);
     printf("\tSuccess\n");
 
 
