@@ -5,6 +5,7 @@
 #define MAXTOWELS       3000
 #define MAXTOWEL        10
 
+
 size_t max_line = 3000;
 char **towels;
 char *line_buf;
@@ -66,11 +67,11 @@ int main(int argc, char *argv[]) {
 int starts_with(char **string, char *prefix);
 
 int is_design_possible(char *design) {
-    printf("%s\n", design);
     char *p;
 
-    if (*design == '\0')
+    if (*design == '\0') {
         return 1;
+    }
 
     for (int i = 0; i < towels_num; i++) {
         p = design;
@@ -80,6 +81,7 @@ int is_design_possible(char *design) {
     }
 
     return 0;
+
 }
 
 void get_towels(void) {
